@@ -16,7 +16,6 @@ def get_data_from_excel(): # this fuction will prevent to call everytime our dat
         usecols='A:I',
         nrows=274,
     )
-    df['Month'] =pd.to_datetime(df['Date'], format="%Y/%m/%d %H:%M:%S%").dt.month
     return df
 df = get_data_from_excel() # this commond will will the data, without call fulldat
 
@@ -69,48 +68,24 @@ with right_column:
 ## Add some dividers
 st.markdown('---')
 
-## Likes by Service type
+## Services by Likes
 
-likes_by_service = (
+service_by_like = (
     df_selection.groupby(by=['Service']).sum()[['Likes']].sort_values(by='Likes')
 )
 
+
 fig_service = px.bar(
-    likes_by_service,
+    service_by_like,
     x="Likes",
-    y=likes_by_service.index,
+    y=service_by_like.index,
     title='<b>Service by Likes</b>',
-    color_discrete_sequence=["#0083B8"] * len(likes_by_service),
+    color_discrete_sequence=["#0083B8"] * len(service_by_like),
     template="plotly_white",
 )
 
-#st.plotly_chart(fig_service)
+st.plotly_chart(fig_service)
 
-likes_by_location = (
-    df_selection.groupby(by="Location", as_index=False).sum()
-)
-# LIKE BY DAYS
-likes_by_month = df_selection.groupby(by=['Month']).sum()[['Likes']]
-fig_like_month = px.bar(
-    likes_by_month,
-    x=likes_by_month.index,
-    y='Likes',
-    title='<b>Like by Month</b>',
-    color_discrete_sequence=['#0083B8'] * len(likes_by_month),
-    template='plotly_white',
-)
-fig_like_month.update_layout(
-    xaxis=dict(tickmode='linear'),
-    plot_bgcolor='rgba(0,0,0,0)',
-    yaxis=(dict(showgrid=False)),
-)
-
-#st.plotly_chart(fig_like_day)
-
-# CREATE TWO COLUMN LAYOUT CHARTS
-left_column, right_column = st.columns(2)
-left_column.plotly_chart(fig_service, use_container_width=True)
-right_column.plotly_chart(fig_like_month, use_container_width=True)
 
 # --- HIDE STREAMLIT STYLES ----
 hide_st_style = """
